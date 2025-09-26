@@ -1,16 +1,52 @@
 {
   "name": "svg-path-marker",
-  "private": true,
-  "version": "0.0.0",
+  "description": "Web component tool to edit svg path",
+  "version": "0.0.1",
+  "author": "akcyp",
+  "license": "ISC",
+  "keywords": [
+    "svg",
+    "path",
+    "editor",
+    "lasso",
+    "free-select",
+    "crop"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akcyp/svg-path-marker.git"
+  },
+  "homepage": "https://github.com/akcyp/svg-path-marker#readme",
+  "bugs": {
+    "url": "https://github.com/akcyp/svg-path-marker/issues"
+  },
+  "main": "dist/index.js",
+  "types": "./dist/index.d.ts",
+  "module": "dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
   "type": "module",
   "scripts": {
-    "test": "vitest",
-    "dev": "vite",
+    "preinstall": "npx only-allow pnpm",
+    "build": "tsc -b && vite build",
+    "build:ci": "pnpm run build -m build:ci",
+    "dev": "rimraf dist && vite",
+    "prod": "pnpm run build && vite",
     "lint": "eslint .",
     "format": "prettier -c .",
-    "build": "tsc && vite build",
+    "test": "vitest",
     "preview": "vite preview",
-    "prepare": "husky"
+    "prepare": "husky",
+    "prepublishOnly": "pnpm run build"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": "eslint --fix",
+    "*.{js,jsx,ts,tsx,md,html,css}": "prettier --write"
   },
   "devDependencies": {
     "@codemirror/autocomplete": "^6.18.7",
@@ -29,6 +65,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.1.6",
     "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
     "sass-embedded": "^1.92.1",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.42.0",
@@ -38,10 +75,6 @@
     "vite-plugin-eslint2": "^5.0.4",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": "eslint --fix",
-    "*.{js,jsx,ts,tsx,md,html,css}": "prettier --write"
   },
   "dependencies": {
     "snabbdom": "3.6.2",

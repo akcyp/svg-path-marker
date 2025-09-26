@@ -25,6 +25,8 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./*"],
+      "svg-path-marker": ["./dist/index", "./lib/main.ts"],
+      "svg-path-marker/*": ["./dist/*", "./lib/*"]
     },
 
     /* JSX */

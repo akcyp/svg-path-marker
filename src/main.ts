@@ -2,8 +2,8 @@ import '@unocss/reset/tailwind.css';
 import 'virtual:uno.css';
 import './style.css';
 
-import '../lib/main';
-import type { SVGPathMarker } from '../lib/main';
+import 'svg-path-marker';
+import type { SVGPathMarker } from 'svg-path-marker';
 import { createEditor } from './components/Editor';
 
 const marker = document.querySelector('svg-path-marker') as SVGPathMarker;
