@@ -1,0 +1,22 @@
+diff --git a/build/jsx.d.ts b/build/jsx.d.ts
+index 318757e2aa4a271246b0af814a32f29aef322b5f..a6ed563733a62158edb8c2874554b9ac01036d0d 100644
+--- a/build/jsx.d.ts
++++ b/build/jsx.d.ts
+@@ -14,7 +14,7 @@ export declare function Fragment(data: {
+  * see: https://www.typescriptlang.org/docs/handbook/jsx.html#factory-functions
+  */
+ export declare function jsx(tag: string | FunctionComponent, data: VNodeData | null, ...children: JsxVNodeChildren[]): VNode;
+-export declare namespace jsx {
++declare namespace JSXTypes {
+     type Element = VNode;
+     type IfEquals<X, Y, Output> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? Output : never;
+     type WritableKeys<T> = {
+@@ -35,3 +35,8 @@ export declare namespace jsx {
+         [elemName: string]: VNodeData;
+     }
+ }
++export namespace jsx {
++  export namespace JSX {
++    export interface IntrinsicElements extends JSXTypes.IntrinsicElements {}
++  }
++}

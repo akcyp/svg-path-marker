@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SVG Editor</title>
+  </head>
+  <body class="bg-slate-1 text-slate-12 relative">
+    <div class="flex h-screen flex-col p-8 w-fit max-w-[100vw] gap-6 mx-auto">
+      <header class="border-b border-slate-6 pb-4 flex justify-between items-center">
+        <h1 class="font-serif text-2xl">SVG-Path-Marker Demo</h1>
+        <div class="flex gap-3 items-center">
+          <p>Load example:</p>
+          <select name="examples" id="selector">
+            <option value="none">None</option>
+            <option value="heart">Heart</option>
+            <option value="relatives">Relatvies</option>
+            <option value="arcs">Arcs</option>
+            <option value="curves">Curves</option>
+          </select>
+        </div>
+      </header>
+      <div class="flex h-full gap-6">
+        <aside class="hidden md:flex w-[35ch] flex-shrink-0 flex-col">
+          <div class="flex flex font-mono mb-4 gap-2">
+            Viewbox:
+            <select name="viewbox" id="viewbox-select" class="w-[100px] text-sm">
+              <option value="">None</option>
+              <option value="0 0 400 400">0 0 400 400</option>
+              <option value="50 50 150 150">50 50 150 150</option>
+            </select>
+            <label for="disabled-toggle">Disabled:</label>
+            <input type="checkbox" id="disabled-toggle" />
+          </div>
+          <div class="relative h-[75vh]">
+            <div class="border border-slate-8 relative h-full" id="editor-wrapper"></div>
+          </div>
+        </aside>
+        <form class="w-[55ch] flex flex-col">
+          <div class="flex justify-between font-mono mb-4">
+            <button
+              type="submit"
+              class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white px-4 border border-blue-500 hover:border-transparent rounded"
+            >
+              Submit
+            </button>
+            <div id="mouse-coordinates">(x, y)</div>
+            <div class="w-[120px]">
+              <!-- Placeholder for css :state() and :disabled showcase -->
+            </div>
+          </div>
+          <svg-path-marker name="path" d="" class="relative h-full w-full">
+            <div class="w-full h-full flex flex-col justify-center items-center">
+              <span class="font-fancy text-6xl text-center">This can be anything</span>
+            </div>
+          </svg-path-marker>
+          <div class="w-full text-wrap break-all">
+            <code id="errors"></code>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

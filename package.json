@@ -1,0 +1,60 @@
+{
+  "name": "svg-path-marker",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "vitest",
+    "dev": "vite",
+    "lint": "eslint .",
+    "format": "prettier -c .",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@codemirror/autocomplete": "^6.18.7",
+    "@codemirror/state": "^6.5.2",
+    "@codemirror/view": "^6.38.2",
+    "@eslint/js": "^9.34.0",
+    "@types/eslint": "^9.6.1",
+    "@types/node": "^22.18.0",
+    "@unocss/preset-web-fonts": "^66.5.0",
+    "@unocss/preset-wind3": "^66.5.0",
+    "@unocss/reset": "^66.5.0",
+    "@unocss/transformer-directives": "^66.5.0",
+    "codemirror": "^6.0.2",
+    "eslint": "^9.34.0",
+    "globals": "^15.15.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.6",
+    "prettier": "^3.6.2",
+    "sass-embedded": "^1.92.1",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.42.0",
+    "unocss": "^66.5.0",
+    "vite": "^7.1.4",
+    "vite-plugin-dts": "^4.5.4",
+    "vite-plugin-eslint2": "^5.0.4",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.2.4"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": "eslint --fix",
+    "*.{js,jsx,ts,tsx,md,html,css}": "prettier --write"
+  },
+  "dependencies": {
+    "snabbdom": "3.6.2",
+    "snabbdom-transform-jsx-props": "^0.3.0"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "snabbdom@3.6.2": "patches/snabbdom@3.6.2.patch"
+    }
+  },
+  "packageManager": "pnpm@9.15.9+sha512.68046141893c66fad01c079231128e9afb89ef87e2691d69e4d40eee228988295fd4682181bae55b58418c3a253bde65a505ec7c5f9403ece5cc3cd37dcf2531",
+  "engines": {
+    "node": "^22.19.0",
+    "pnpm": "^9.1.0"
+  }
+}

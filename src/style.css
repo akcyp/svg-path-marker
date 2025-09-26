@@ -1,0 +1,84 @@
+/* @tailwind base; */
+/* @tailwind components; */
+/* @tailwind utilities; */
+
+svg-path-marker {
+  background: url('./assets/mask.svg');
+}
+
+svg-path-marker::before {
+  position: absolute;
+  font-family: 'PP Editorial New', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+  right: 0;
+  top: -40px;
+}
+
+svg-path-marker:state(open)::before {
+  content: 'CSS :state(open)';
+  color: green;
+}
+
+svg-path-marker:state(closed)::before {
+  content: 'CSS :state(closed)';
+  color: gray;
+}
+
+svg-path-marker:state(open):state(drag)::before {
+  content: 'CSS :state(open, drag)';
+  color: green;
+}
+
+svg-path-marker:state(closed):state(drag)::before {
+  content: 'CSS :state(closed, drag)';
+  color: gray;
+}
+
+svg-path-marker:disabled::before {
+  content: 'CSS: disabled';
+  color: red;
+}
+
+.cm-editor {
+  @apply h-full;
+}
+
+.cm-editor .cm-tooltip.cm-tooltip-autocomplete {
+  @apply bg-slate-3 py-2 shadow-md border border-slate-6;
+}
+
+.cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul {
+  @apply font-mono text-sm text-slate-11 w-fit min-w-0;
+}
+
+.cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li {
+  @apply px-2;
+}
+
+.cm-editor .cm-tooltip.cm-tooltip-autocomplete .cm-completionIcon {
+  @apply w-0 p-0;
+}
+
+.cm-editor .cm-scroller {
+  @apply font-mono;
+}
+
+.cm-editor .cm-content {
+  @apply py-4;
+}
+
+.cm-editor .cm-gutters {
+  @apply bg-slate-1 text-slate-11 border-none;
+}
+
+.cm-editor .cm-activeLineGutter {
+  @apply bg-slate-1;
+}
+
+.cm-editor .cm-foldGutter .cm-gutterElement.cm-activeLineGutter {
+  @apply relative;
+}
+
+.cm-editor .cm-foldGutter .cm-gutterElement.cm-activeLineGutter:after {
+  content: '';
+  @apply absolute right-0 top-0 bottom-0 w-1 bg-slate-12;
+}
