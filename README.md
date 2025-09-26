@@ -20,9 +20,21 @@ See https://akcyp.github.io/svg-path-marker/
 ## Features
 
 - Draw and edit SVG shapes
-- Cross framework support thanks to Web Component implementation
+- Multiple shapes support
+- Touch devices support
 - Keyboard support
-- Undo/redo actions
+- Undo/redo actions (Ctrl-Z, Ctrl-Y)
+- Resposive (tool is rendering with native SVG element instead of canvas)
+- Cross framework support thanks to Web Component implementation
+- Form control support
+
+## Quick usage guide
+
+- Double click to add new point (tap on touch devices)
+- Click on point to edit its properties & add successor commands (points)
+- Drag points around
+
+# Developer guide
 
 ## Installation
 
@@ -35,7 +47,7 @@ yarn add svg-path-marker
 pnpm add svg-path-marker
 ```
 
-## Usage
+## Loading in your application
 
 ```ts
 // Load with JS / TS:
@@ -52,7 +64,20 @@ import type { SVGPathMarker } from 'svg-path-marker';
   <!-- Any content, for example: -->
   <img width="500px" height="500px" src="..." />
 </svg-path-marker>
+
+<!-- Use as form control: -->
+<form>
+  <!-- "d" property is a value -->
+  <svg-path-marker
+    name="path"
+    d="M 0,0 L 0,5 L 5,5 Z"
+    style="width: 100px; height: 100px"
+  ></svg-path-marker>
+  <button type="submit">Submit</button>
+</form>
 ```
+
+CSS states:
 
 ```css
 svg-path-marker:disabled {
