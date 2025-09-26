@@ -56,7 +56,7 @@ circle {
     pointer-events: none !important;
     visibility: hidden !important;
   }
-  &[data-type="end"] {
+  &[data-type='end'] {
     cursor: var(--cursor-draggable);
     stroke: currentColor;
     fill: white;
@@ -67,8 +67,8 @@ circle {
       stroke: gray !important;
     }
   }
-  &[data-type="h1"],
-  &[data-type="h2"] {
+  &[data-type='h1'],
+  &[data-type='h2'] {
     cursor: var(--cursor-draggable);
     r: 2px;
     stroke-width: 2px;
@@ -80,9 +80,9 @@ circle {
       stroke: #bfbfbf !important;
     }
   }
-  &[data-type="h1:disabled"],
-  &[data-type="h2:disabled"],
-  &[data-type="arc-center"] {
+  &[data-type='h1:disabled'],
+  &[data-type='h2:disabled'],
+  &[data-type='arc-center'] {
     r: 2px;
     stroke-width: 2px;
     fill: #bfbfbf;
@@ -96,9 +96,10 @@ line {
   // stroke-dasharray: 6px;
   &[data-type='line'] {
     stroke: gray;
-    fill: gray
+    fill: gray;
   }
-  [data-relative='true'] > &, &[data-type='line:disabled'] {
+  [data-relative='true'] > &,
+  &[data-type='line:disabled'] {
     cursor: var(--cursor-default) !important;
     stroke: #bfbfbf;
     stroke-dasharray: 2px;
@@ -106,7 +107,8 @@ line {
 }
 
 rect {
-  &[data-type="rx-handle"], &[data-type="ry-handle"] {
+  &[data-type='rx-handle'],
+  &[data-type='ry-handle'] {
     fill: #444;
     stroke: #333;
   }
@@ -125,10 +127,15 @@ rect {
 }
 
 // Hide helper points by default
-[data-type="h1"], [data-type="h1:disabled"],
-[data-type="h2"], [data-type="h2:disabled"],
-[data-type="line"], [data-type="line:disabled"],
-[data-type="arc-center"], [data-type="rx-handle"], [data-type="ry-handle"] {
+[data-type='h1'],
+[data-type='h1:disabled'],
+[data-type='h2'],
+[data-type='h2:disabled'],
+[data-type='line'],
+[data-type='line:disabled'],
+[data-type='arc-center'],
+[data-type='rx-handle'],
+[data-type='ry-handle'] {
   display: none;
 
   [data-helpers-visible] & {
@@ -137,13 +144,13 @@ rect {
 }
 
 .selected {
-  [data-type="path-fragment"] {
+  [data-type='path-fragment'] {
     stroke-dasharray: 4px;
     animation: dashoffset 100s linear infinite;
   }
 }
 
-[data-type="debug"] {
+[data-type='debug'] {
   stroke: green;
   transform: translate(0px, 270px);
 }
@@ -158,7 +165,7 @@ rect {
   border: 1px solid #3a3434;
   border-radius: 8px;
   padding: 4px 6px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 
   ul {
     display: flex;
@@ -185,7 +192,9 @@ rect {
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
-    transition: background 0.2s, box-shadow 0.2s;
+    transition:
+      background 0.2s,
+      box-shadow 0.2s;
 
     &:not(.disabled):hover {
       background: #444;
@@ -234,7 +243,7 @@ rect {
     pointer-events: none;
     transition: opacity 0.2s;
     z-index: 1100;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   }
 
   &:hover::after,

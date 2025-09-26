@@ -12,7 +12,7 @@
         <h1 class="font-serif text-2xl">SVG-Path-Marker Demo</h1>
         <div class="flex gap-3 items-center">
           <p>Load example:</p>
-          <select name="examples" id="selector">
+          <select disabled name="examples" id="selector">
             <option value="none">None</option>
             <option value="heart">Heart</option>
             <option value="relatives">Relatvies</option>
@@ -51,9 +51,7 @@
             </div>
           </div>
           <svg-path-marker name="path" d="" class="relative h-full w-full">
-            <div class="w-full h-full flex flex-col justify-center items-center">
-              <span class="font-fancy text-6xl text-center">This can be anything</span>
-            </div>
+            <div class="w-full h-full flex flex-col justify-center items-center"></div>
           </svg-path-marker>
           <div class="w-full text-wrap break-all">
             <code id="errors"></code>
