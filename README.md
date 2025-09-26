@@ -5,7 +5,7 @@ A simple web-based SVG editor for creating and editing scalable vector graphics.
 > [!WARNING]
 > This package is still in the experimental phase. You can expect new functionalities, but with this comes the possibility of more frequent errors
 
-> [!ERROR]
+> [!CAUTION]
 > Package is not yet available on npm registry
 
 [![React Lasso Select on NPM](https://img.shields.io/npm/v/svg-path-marker.svg)](https://www.npmjs.com/package/svg-path-marker)
