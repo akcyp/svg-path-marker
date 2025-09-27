@@ -1,7 +1,7 @@
 import type { MoveOptions } from '../parser/core/ShapeCommand';
 import type { Point } from '../types/Geometry';
 
-export const roundToPrecision = (value: number, p: number) => {
+export const roundToPrecision = (value: number, p: number = 0) => {
   const pow = Math.pow(10, p);
   return Math.round((value + Number.EPSILON) * pow) / pow;
 };
