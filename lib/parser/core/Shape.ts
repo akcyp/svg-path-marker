@@ -1,7 +1,7 @@
 import { getAbsoluteCoordinatesForNextCommand } from '~/lib/utils/getAbsoluteCoordinatesForNextCommand';
-import type { Point, Vector } from '../../types/Geometry';
+import type { Point } from '../../types/Geometry';
 import type { SVGPathToken } from '../normalize';
-import type { OneOfShapeCommand } from './ShapeCommand';
+import type { MoveOptions, OneOfShapeCommand } from './ShapeCommand';
 import { commandFromToken } from '../../utils/commandFromToken';
 import { Border } from '~/lib/utils/getBorderPoints';
 
@@ -63,11 +63,12 @@ export class Shape {
     this.commands.forEach((command) => shape.add(command.token));
     return shape;
   }
-  move({ vx, vy }: Vector) {
+  move({ vx, vy, precision }: Omit<MoveOptions, 'moveRelative'>) {
     this.commands.forEach((command, i) => {
       command.move({
         vx,
         vy,
+        precision,
         // Do not move relative commands, only the first one
         moveRelative: i === 0 && command.command === 'moveto'
       });

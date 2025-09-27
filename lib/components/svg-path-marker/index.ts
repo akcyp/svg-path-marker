@@ -12,7 +12,9 @@ import { HistoryAPI } from '~/lib/core/HistoryAPI';
 export interface SVGPathMarkerProps {
   disabled: boolean | null;
   d: string | null;
-  viewBox: string | null;
+  viewbox: string | null;
+  precision: string | null;
+  showhelpers: boolean | null;
 }
 
 @define('svg-path-marker')
@@ -20,8 +22,25 @@ export class SVGPathMarker
   extends HTMLElement
   implements WebComponentLifecycle, WebComponentsFormField
 {
+  static create(props: Partial<SVGPathMarkerProps>) {
+    const element = document.createElement('svg-path-marker') as SVGPathMarker;
+    Object.assign(element, props);
+    return element;
+  }
   static readonly formAssociated = true;
-  static readonly observedAttributes: (keyof SVGPathMarkerProps)[] = ['disabled', 'd', 'viewBox'];
+  static readonly observedAttributes: (keyof SVGPathMarkerProps)[] = [
+    'disabled',
+    'd',
+    'viewbox',
+    'precision',
+    'showhelpers'
+  ];
+
+  /*
+    get field() => this.getAttribute(field)
+    set field() => this.setAttribute(field, ...)
+    #fieldChanged() => side-effects
+  */
 
   // Disabled property
   get disabled() {
@@ -30,41 +49,85 @@ export class SVGPathMarker
   set disabled(value) {
     this.toggleAttribute('disabled', !!value);
   }
-  #disabledChange(_: boolean, newValue: boolean) {
-    this.disabled = newValue;
-    if (newValue) this.#interactions.controlsAPI.hide();
+  #disabledChange() {
+    if (this.disabled) this.#interactions.controlsAPI.hide();
+  }
+
+  // ShowHelpers property
+  get showhelpers() {
+    return this.hasAttribute('showHelpers');
+  }
+  set showhelpers(value) {
+    this.toggleAttribute('showHelpers', !!value);
+  }
+  #showHelpersChange() {
+    this.#internals.states[this.showhelpers ? 'add' : 'delete']('helpers-default-visible');
+  }
+
+  // Precision property
+  #isValidPrecision(value: string | null) {
+    const precision = Number(value);
+    return (
+      precision &&
+      !Number.isNaN(precision) &&
+      Number.isInteger(precision) &&
+      precision >= 0 &&
+      precision <= 10
+    );
+  }
+  get precision() {
+    return this.getAttribute('precision');
+  }
+  set precision(value) {
+    if (!this.#isValidPrecision(value)) {
+      throw new TypeError(`Invalid precision provided. It should be an integer in range <0, 10>`);
+    }
+    this.setAttribute('precision', `${value}`);
+  }
+  #precisionChange() {
+    if (this.#isValidPrecision(this.precision)) {
+      this.#interactions.setPrecision(Number(this.precision));
+    }
   }
 
   // ViewBox property
-  get viewBox() {
+  #isValidViewbox(value: string | null) {
+    return !value || /^(-?\d+(?:\.\d+)?\s){3}(-?\d+(?:\.\d+)?)$/.test(value);
+  }
+  get viewbox() {
     return this.getAttribute('viewBox');
   }
-  set viewBox(value) {
-    if (!value || !/^(-?\d+(?:\.\d+)?\s){3}(-?\d+(?:\.\d+)?)$/.test(value)) return;
+  set viewbox(value) {
+    if (!this.#isValidViewbox(value)) {
+      throw new TypeError(
+        `Invalid viewbox value. It should be null / empty string or in format "{number} {number} {number} {number}"`
+      );
+    }
     if (value) {
       this.setAttribute('viewBox', value);
     } else {
       this.removeAttribute('viewBox');
     }
-    this.#history.clear();
-    this.#renderer.update(this.#shapes, this.d ?? '', this.viewBox);
   }
-  #viewBoxChange(_: string, newValue: string | null) {
-    this.viewBox = newValue;
+  #viewBoxChange() {
+    if (this.#isValidViewbox(this.viewbox)) {
+      this.#history.clear();
+      this.#renderer.update(this.#shapes, this.d ?? '', this.viewbox);
+    }
   }
 
   // Path d property
   #shapes: Shape[] = [];
-  get d() {
-    return this.getAttribute('d');
-  }
-  set d(value) {
-    this.setAttribute('d', value ?? '');
-  }
-  #dChange(oldValue: string, newValue: string) {
-    if (oldValue?.replace(/\s+/g, ' ') === newValue?.replace(/\s+/g, ' ')) return;
+  #parsePathAndUpdateFormValue(value: string) {
+    this.#internals.setFormValue(value);
+    let shapes: Shape[] | null = null;
     try {
-      this.#shapes = parsePath(newValue);
+      shapes = parsePath(value);
+      this.#internals.setValidity({
+        typeMismatch: false,
+        patternMismatch: false,
+        badInput: false
+      });
     } catch (e) {
       this.#internals.setValidity(
         {
@@ -74,30 +137,32 @@ export class SVGPathMarker
         },
         (e as Error).message
       );
-      return;
     }
-    this.#internals.setFormValue(newValue);
-    this.#internals.setValidity({
-      typeMismatch: false,
-      patternMismatch: false,
-      badInput: false
-    });
-    this.#onPathUpdate();
-    this.#renderer.update(this.#shapes, newValue, this.viewBox);
-    this.#interactions.update(this.#shapes);
-    this.#keyboard.update(this.#shapes);
+    return shapes;
+  }
+  get d() {
+    return this.getAttribute('d');
+  }
+  set d(value) {
+    this.setAttribute('d', value ?? '');
+  }
+  #dChange(oldValue: string, newValue: string) {
+    if (oldValue?.replace(/\s+/g, ' ') === newValue?.replace(/\s+/g, ' ')) return;
+    const shapes = this.#parsePathAndUpdateFormValue(newValue);
     const event = new InputEvent('change', {
-      data: this.d,
-      cancelable: false
+      data: newValue,
+      cancelable: true
     });
     this.dispatchEvent(event);
+    if (event.defaultPrevented || !shapes) {
+      return;
+    }
+    this.#shapes = shapes;
+    // Update renderer, interactions, keyboard APIs
+    this.#onPathUpdate();
+    // Complete event
     if (!this.#internals.states.has('drag')) {
-      this.#history.update(this.#shapes, newValue);
-      const completeEvent = new InputEvent('complete', {
-        data: this.d,
-        cancelable: false
-      });
-      this.dispatchEvent(completeEvent);
+      this.#onPathComplete();
     }
   }
 
@@ -134,10 +199,24 @@ export class SVGPathMarker
     this.setAttribute('tabindex', '0');
   }
 
+  #onPathComplete() {
+    // Update history API
+    this.#history.update(this.#shapes);
+    const completeEvent = new InputEvent('complete', {
+      data: this.d,
+      cancelable: false
+    });
+    this.dispatchEvent(completeEvent);
+  }
+
   #onPathUpdate() {
     const isClosed = this.#shapes.every((shape) => shape.closed);
     this.#internals.states[isClosed ? 'add' : 'delete']('closed');
     this.#internals.states[isClosed ? 'delete' : 'add']('open');
+
+    this.#renderer.update(this.#shapes, this.d ?? '', this.viewbox);
+    this.#interactions.update(this.#shapes);
+    this.#keyboard.update(this.#shapes);
   }
 
   connectedCallback() {
@@ -155,11 +234,15 @@ export class SVGPathMarker
   attributeChangedCallback(name: keyof SVGPathMarkerProps, oldValue: string, newValue: string) {
     switch (name) {
       case 'disabled':
-        return this.#disabledChange(oldValue !== null, newValue !== null);
+        return this.#disabledChange();
       case 'd':
         return this.#dChange(oldValue, newValue);
-      case 'viewBox':
-        return this.#viewBoxChange(oldValue, newValue);
+      case 'viewbox':
+        return this.#viewBoxChange();
+      case 'showhelpers':
+        return this.#showHelpersChange();
+      case 'precision':
+        return this.#precisionChange();
     }
   }
 

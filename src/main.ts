@@ -5,6 +5,7 @@ import './style.css';
 import 'svg-path-marker';
 import type { SVGPathMarker } from 'svg-path-marker';
 import { createEditor } from './components/Editor';
+import { examples } from './demo';
 
 const marker = document.querySelector('svg-path-marker') as SVGPathMarker;
 const editorWrapper = document.querySelector('#editor-wrapper')!;
@@ -31,36 +32,21 @@ marker.addEventListener('mouseleave', () => updateMouseCoordinates(null), true);
 marker.addEventListener('touchend', () => updateMouseCoordinates(null), true);
 
 const displayErrors = () => {
-  const {
-    badInput,
-    customError,
-    patternMismatch,
-    rangeOverflow,
-    rangeUnderflow,
-    stepMismatch,
-    tooLong,
-    tooShort,
-    typeMismatch,
-    valid,
-    valueMissing
-  } = marker.validity;
-  const entries = [
-    ...Object.entries({
-      badInput,
-      customError,
-      patternMismatch,
-      rangeOverflow,
-      rangeUnderflow,
-      stepMismatch,
-      tooLong,
-      tooShort,
-      typeMismatch,
-      valid,
-      valueMissing
-    }),
-    ['message', marker.validationMessage]
-  ];
-  const errors = Object.fromEntries(entries.filter(([, value]) => !!value));
+  const validity = {
+    badInput: marker.validity.badInput,
+    customError: marker.validity.customError,
+    patternMismatch: marker.validity.patternMismatch,
+    rangeOverflow: marker.validity.rangeOverflow,
+    rangeUnderflow: marker.validity.rangeUnderflow,
+    stepMismatch: marker.validity.stepMismatch,
+    tooLong: marker.validity.tooLong,
+    tooShort: marker.validity.tooShort,
+    typeMismatch: marker.validity.typeMismatch,
+    valid: marker.validity.valid,
+    valueMissing: marker.validity.valueMissing,
+    message: marker.validationMessage
+  };
+  const errors = Object.fromEntries(Object.entries(validity).filter(([, value]) => !!value));
   errorsWrapper.innerHTML = 'Input validity: ' + JSON.stringify(errors);
 };
 
@@ -106,19 +92,18 @@ form.addEventListener('submit', (e) => {
   alert(JSON.stringify(Object.fromEntries(formData)));
 });
 
-const examples: Record<string, string> = {
-  none: '',
-  heart: '',
-  relatives: '',
-  arcs: '',
-  curves: ''
-};
-const selector = document.querySelector('#selector') as HTMLSelectElement;
-selector.addEventListener('change', () => {
-  marker.d = examples[selector.value]!;
-});
-
 const viewboxSelector = document.querySelector('#viewbox-select') as HTMLSelectElement;
 viewboxSelector.addEventListener('change', () => {
-  marker.viewBox = viewboxSelector.value;
+  marker.viewbox = viewboxSelector.value;
+});
+
+const selector = document.querySelector('#selector') as HTMLSelectElement;
+selector.addEventListener('change', () => {
+  if (selector.value in examples) {
+    const { d, viewBox, showHelpers } = examples[selector.value];
+    marker.viewbox = viewBox;
+    viewboxSelector.value = viewBox;
+    marker.d = d;
+    marker.showhelpers = showHelpers;
+  }
 });

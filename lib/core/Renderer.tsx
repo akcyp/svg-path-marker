@@ -55,8 +55,8 @@ export class Renderer {
 
   render(): VNode {
     return (
-      <svg viewBox={this.viewBox ?? undefined}>
-        <path key="d" d={this.d} data-type="debug" />
+      <svg viewBox={this.viewBox ?? false}>
+        <path key="d" d={this.d} data-type="original" />
         {this.shapes.map((shape, index) => this.renderShape(shape, index))}
       </svg>
     );

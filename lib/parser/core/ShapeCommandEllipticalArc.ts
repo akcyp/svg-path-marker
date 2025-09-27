@@ -1,3 +1,4 @@
+import { moveSmooth, roundToPrecision } from '~/lib/utils/roundPointCoordinates';
 import type { SVGPathToken } from '../normalize';
 import { type AbsoluteCoords, type MoveOptions, ShapeCommand } from './ShapeCommand';
 
@@ -48,20 +49,19 @@ export class ShapeCommandEllipticalArc extends ShapeCommand {
     this.y = attributes.y;
     this._updateHelperPoints();
   }
-  override move({ vx, vy, moveRelative }: MoveOptions) {
-    if (this.relative && !moveRelative) return;
-    this.moveStartPoint({ vx, vy, moveRelative });
-    this.moveEndPoint({ vx, vy, moveRelative });
+  override move(move: MoveOptions) {
+    if (this.relative && !move.moveRelative) return;
+    this.moveStartPoint(move);
+    this.moveEndPoint(move);
     this._updateHelperPoints();
   }
-  override moveStartPoint({ vx, vy }: MoveOptions) {
-    super.moveStartPoint({ vx, vy });
+  override moveStartPoint(move: MoveOptions) {
+    super.moveStartPoint(move);
     this._updateHelperPoints();
   }
-  override moveEndPoint({ vx, vy }: MoveOptions) {
-    this.x += vx;
-    this.y += vy;
-    super.moveEndPoint({ vx, vy });
+  override moveEndPoint(move: MoveOptions) {
+    Object.assign(this, moveSmooth(this, move));
+    super.moveEndPoint(move);
     this._updateHelperPoints();
   }
   public setXAxisRotation(angle: number) {
@@ -138,7 +138,7 @@ export class ShapeCommandEllipticalArc extends ShapeCommand {
       ry: ryPt
     };
   }
-  public moveRx({ vx, vy }: MoveOptions) {
+  public moveRx({ vx, vy, precision }: MoveOptions) {
     // Move only along the rx axis direction (ellipse major axis)
     const phiRad = this.getXAxisRotationRadians();
     // Axis direction vector
@@ -146,10 +146,10 @@ export class ShapeCommandEllipticalArc extends ShapeCommand {
     // Project movement onto axis
     const delta = vx * axis.x + vy * axis.y;
     // Update radius
-    this.rx = Math.max(0.1, this.rx + delta);
+    this.rx = roundToPrecision(Math.max(0.1, this.rx + delta), precision);
     this._updateHelperPoints();
   }
-  public moveRy({ vx, vy }: MoveOptions) {
+  public moveRy({ vx, vy, precision }: MoveOptions) {
     // Move only along the ry axis direction (ellipse minor axis, perpendicular to rx)
     const phiRad = this.getXAxisRotationRadians();
     // Axis direction vector (perpendicular)
@@ -157,7 +157,7 @@ export class ShapeCommandEllipticalArc extends ShapeCommand {
     // Project movement onto axis
     const delta = vx * axis.x + vy * axis.y;
     // Update radius
-    this.ry = Math.max(0.1, this.ry + delta);
+    this.ry = roundToPrecision(Math.max(0.1, this.ry + delta), precision);
     this._updateHelperPoints();
   }
 }

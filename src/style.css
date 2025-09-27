@@ -38,6 +38,15 @@ svg-path-marker:disabled::before {
   color: red;
 }
 
+svg-path-marker:invalid::before {
+  content: 'CSS :invalid';
+  color: red;
+}
+
+svg-path-marker:invalid {
+  border: 1px solid red;
+}
+
 .cm-editor {
   @apply h-full;
 }

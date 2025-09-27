@@ -14,8 +14,8 @@ export class HistoryAPI {
     private context: HistoryAPIContext
   ) {}
 
-  update(shapes: Shape[], _newValue: string) {
-    const d = shapes.toString();
+  update(shapes: Shape[]) {
+    const d = shapes.map((shape) => shape.toString()).join(' ');
     if (this.ignoreNextUpdate === d) {
       return;
     }

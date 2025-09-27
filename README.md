@@ -8,6 +8,14 @@ A simple web-based SVG editor for creating and editing scalable vector graphics.
 > [!CAUTION]
 > Package is not yet available on npm registry
 
+> [!IMPORTANT]
+> Package is using modern Web APIs which may be not available on older browsers
+> See:
+>
+> - https://caniuse.com/mdn-api_htmlelement_attachinternals
+> - https://caniuse.com/mdn-api_elementinternals
+> - https://caniuse.com/mdn-api_shadowroot
+
 [![React Lasso Select on NPM](https://img.shields.io/npm/v/svg-path-marker.svg)](https://www.npmjs.com/package/svg-path-marker)
 ![Minified size](https://img.shields.io/bundlephobia/min/svg-path-marker)
 
@@ -38,7 +46,7 @@ See https://akcyp.github.io/svg-path-marker/
 
 ## Installation
 
-```
+```sh
 # with npm
 npm i svg-path-marker
 # with yarn
@@ -60,7 +68,7 @@ import type { SVGPathMarker } from 'svg-path-marker';
 <script type="module" src="./node_modules/svg-path-marker"></script>
 
 <!-- Usage: -->
-<svg-path-marker d="M 0,0" viewBox="0 0 500 500">
+<svg-path-marker d="M 0,0" viewbox="0 0 500 500">
   <!-- Any content, for example: -->
   <img width="500px" height="500px" src="..." />
 </svg-path-marker>
@@ -82,6 +90,9 @@ CSS states:
 ```css
 svg-path-marker:disabled {
   /* Custom disabled styles */
+}
+svg-path-marker:invalid {
+  /* Custom invalid input styles */
 }
 svg-path-marker:state(open) {
   /* Custom open styles (when at least one path is not closed) */
@@ -109,8 +120,16 @@ export interface SVGPathMarkerProps {
    */
   disabled?: boolean;
   /**
-   * The viewBox attribute defines the position and dimension, in user space, of an SVG editor viewport.
+   * The viewbox attribute defines the position and dimension, in user space, of an SVG editor viewport.
    */
-  viewBox?: string;
+  viewbox?: string;
+  /**
+   * Integer string to round points coordinates
+   */
+  precision?: string;
+  /**
+   * Show helper points by default
+   */
+  showhelpers?: boolean;
 }
 ```

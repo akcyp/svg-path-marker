@@ -16,6 +16,7 @@ export class Interactions {
   public readonly draggableAPI: DraggableAPI;
   public readonly controlsAPI: ControlsAPI;
   private shapes: Shape[] = [];
+  private precision = 1;
   constructor(
     private svg: SVGSVGElement,
     private tooltip: HTMLDivElement,
@@ -38,11 +39,11 @@ export class Interactions {
           fragmentsAsPath: true
         });
         const type = target.getAttribute('data-type')!;
-        const { x: vx, y: vy } = roundPointCoordinates({ x: vector.vx, y: vector.vy }, 2);
+        const { vx, vy } = vector;
         if (!shape) return;
         // Move entire shape
         if (!command) {
-          shape.move({ vx, vy });
+          shape.move({ vx, vy, precision: this.precision });
           this.tryUpdate(this.shapes);
           return;
         }
@@ -50,22 +51,22 @@ export class Interactions {
         if (command.relative) return;
         if (type === 'end') {
           if (modifiers.shiftKey) {
-            command.move({ vx, vy, moveRelative: true });
+            command.move({ vx, vy, moveRelative: true, precision: this.precision });
           } else {
-            command.moveEndPoint({ vx, vy });
+            command.moveEndPoint({ vx, vy, precision: this.precision });
           }
         }
         if (type === 'h1' && 'x1' in command && 'y1' in command) {
-          command.moveStartControlPoint({ vx, vy });
+          command.moveStartControlPoint({ vx, vy, precision: this.precision });
         }
         if (type === 'h2' && 'x2' in command && 'y2' in command) {
-          command.moveEndControlPoint({ vx, vy });
+          command.moveEndControlPoint({ vx, vy, precision: this.precision });
         }
         if (type === 'rx-handle' && 'rx' in command) {
-          command.moveRx({ vx, vy });
+          command.moveRx({ vx, vy, precision: this.precision });
         }
         if (type === 'ry-handle' && 'ry' in command) {
-          command.moveRy({ vx, vy });
+          command.moveRy({ vx, vy, precision: this.precision });
         }
         this.tryUpdate(this.shapes);
       },
@@ -96,10 +97,17 @@ export class Interactions {
     this.controlsAPI.update(shapes);
   }
 
+  public setPrecision(precision: number) {
+    this.precision = precision;
+  }
+
   // Custom interactions
   private onDblClick = (e: MouseEvent | TouchEvent) => {
     const coords = matrixTransformUserEvent(e, this.svg);
-    const { x, y } = roundPointCoordinates(coords, 1);
+    const { x, y } = roundPointCoordinates({
+      ...coords,
+      precision: 1
+    });
     const [newShape] = parsePath(`M ${x} ${y}`);
     this.shapes.push(newShape);
     this.tryUpdate(this.shapes);

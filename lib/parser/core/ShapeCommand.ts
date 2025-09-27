@@ -1,4 +1,5 @@
-import { Border } from '~/lib/utils/getBorderPoints';
+import { moveSmooth } from '~/lib/utils/roundPointCoordinates';
+import type { Border } from '~/lib/utils/getBorderPoints';
 import type { Point } from '../../types/Geometry';
 import type { SVGPathToken } from '../normalize';
 import type { ShapeCommandClosePath } from './ShapeCommandClosePath';
@@ -25,6 +26,7 @@ export type OneOfShapeCommand =
   | ShapeCommandSmoothQuadraticCurveTo;
 
 export interface MoveOptions {
+  precision?: number;
   moveRelative?: boolean;
   vx: number;
   vy: number;
@@ -61,13 +63,11 @@ export abstract class ShapeCommand {
   }
   abstract toString(): string;
   abstract move({ vx, vy }: MoveOptions): void;
-  moveStartPoint({ vx, vy }: MoveOptions) {
-    this.coords.start.x += vx;
-    this.coords.start.y += vy;
+  moveStartPoint(move: MoveOptions) {
+    this.coords.start = moveSmooth(this.coords.start, move);
   }
-  moveEndPoint({ vx, vy }: MoveOptions) {
-    this.coords.end.x += vx;
-    this.coords.end.y += vy;
+  moveEndPoint(move: MoveOptions) {
+    this.coords.end = moveSmooth(this.coords.end, move);
   }
   public update(command: OneOfShapeCommand) {
     Object.assign(this.coords.start, command.coords.start);

@@ -1,3 +1,4 @@
+import { moveSmooth } from '~/lib/utils/roundPointCoordinates';
 import type { SVGPathToken } from '../normalize';
 import { type AbsoluteCoords, type MoveOptions, ShapeCommand } from './ShapeCommand';
 
@@ -21,16 +22,15 @@ export class ShapeCommandMoveTo extends ShapeCommand {
     this.x = coords.x;
     this.y = coords.y;
   }
-  override move({ vx, vy, moveRelative }: MoveOptions) {
-    if (this.relative && !moveRelative) return;
-    this.moveEndPoint({ vx, vy, moveRelative });
+  override move(move: MoveOptions) {
+    if (this.relative && !move.moveRelative) return;
+    this.moveEndPoint(move);
   }
-  override moveStartPoint({ vx, vy }: MoveOptions) {
-    super.moveStartPoint({ vx, vy });
+  override moveStartPoint(move: MoveOptions) {
+    super.moveStartPoint(move);
   }
-  override moveEndPoint({ vx, vy }: MoveOptions) {
-    this.x += vx;
-    this.y += vy;
-    super.moveEndPoint({ vx, vy });
+  override moveEndPoint(move: MoveOptions) {
+    Object.assign(this, moveSmooth(this, move));
+    super.moveEndPoint(move);
   }
 }

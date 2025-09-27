@@ -1,3 +1,4 @@
+import { moveSmooth } from '~/lib/utils/roundPointCoordinates';
 import type { SVGPathToken } from '../normalize';
 import { type AbsoluteCoords, type MoveOptions, ShapeCommand } from './ShapeCommand';
 
@@ -35,25 +36,24 @@ export class ShapeCommandSmoothCurveTo extends ShapeCommand {
     this.y2 = coords.y2;
     this.helperCoords.h2 = this.getAbsoultePointPosition(this.x2, this.y2);
   }
-  override move({ vx, vy, moveRelative }: MoveOptions) {
-    if (this.relative && !moveRelative) return;
-    this.x += vx;
-    this.y += vy;
-    this.x2 += vx;
-    this.y2 += vy;
+  override move(move: MoveOptions) {
+    if (this.relative && !move.moveRelative) return;
+    this.moveStartPoint(move);
+    this.moveEndPoint(move);
+    this.moveEndControlPoint(move);
   }
-  override moveStartPoint({ vx, vy }: MoveOptions) {
-    super.moveStartPoint({ vx, vy });
+  override moveStartPoint(move: MoveOptions) {
+    super.moveStartPoint(move);
   }
-  override moveEndPoint({ vx, vy }: MoveOptions) {
-    this.x += vx;
-    this.y += vy;
-    super.moveEndPoint({ vx, vy });
+  override moveEndPoint(move: MoveOptions) {
+    Object.assign(this, moveSmooth(this, move));
+    super.moveEndPoint(move);
   }
-  public moveEndControlPoint({ vx, vy }: MoveOptions) {
-    this.x2 += vx;
-    this.y2 += vy;
-    this.helperCoords.h2.x += vx;
-    this.helperCoords.h2.y += vy;
+  public moveEndControlPoint(move: MoveOptions) {
+    const { x: x2, y: y2 } = moveSmooth({ x: this.x2, y: this.y2 }, move);
+    this.x2 = x2;
+    this.y2 = y2;
+
+    this.helperCoords.h2 = moveSmooth(this.helperCoords.h2, move);
   }
 }

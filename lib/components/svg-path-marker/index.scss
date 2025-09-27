@@ -143,6 +143,26 @@ rect {
   }
 }
 
+// Invert if state applied
+:host(:state(helpers-default-visible)) {
+  border: 1px solid green;
+  [data-type='h1'],
+  [data-type='h1:disabled'],
+  [data-type='h2'],
+  [data-type='h2:disabled'],
+  [data-type='line'],
+  [data-type='line:disabled'],
+  [data-type='arc-center'],
+  [data-type='rx-handle'],
+  [data-type='ry-handle'] {
+    display: unset;
+
+    [data-helpers-visible] & {
+      display: none;
+    }
+  }
+}
+
 .selected {
   [data-type='path-fragment'] {
     stroke-dasharray: 4px;
@@ -150,9 +170,10 @@ rect {
   }
 }
 
-[data-type='debug'] {
-  stroke: green;
-  transform: translate(0px, 270px);
+[data-type='original'] {
+  stroke: none;
+  fill: none;
+  pointer-events: none;
 }
 
 .popup {

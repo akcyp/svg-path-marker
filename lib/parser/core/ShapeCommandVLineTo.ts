@@ -1,3 +1,4 @@
+import { roundToPrecision } from '~/lib/utils/roundPointCoordinates';
 import type { SVGPathToken } from '../normalize';
 import { type AbsoluteCoords, type MoveOptions, ShapeCommand } from './ShapeCommand';
 
@@ -19,16 +20,16 @@ export class ShapeCommandVLineTo extends ShapeCommand {
   private _update(coords: Pick<ShapeCommandVLineTo, 'y'>) {
     this.y = coords.y;
   }
-  override move({ vy, moveRelative }: MoveOptions) {
-    if (this.relative && !moveRelative) return;
-    this.moveStartPoint({ vx: 0, vy, moveRelative });
-    this.moveEndPoint({ vx: 0, vy, moveRelative });
+  override move(move: MoveOptions) {
+    if (this.relative && !move.moveRelative) return;
+    this.moveStartPoint({ ...move, vx: 0 });
+    this.moveEndPoint({ ...move, vx: 0 });
   }
-  override moveStartPoint({ vy }: MoveOptions) {
-    super.moveStartPoint({ vx: 0, vy });
+  override moveStartPoint(move: MoveOptions) {
+    super.moveStartPoint({ ...move, vx: 0 });
   }
-  override moveEndPoint({ vy }: MoveOptions) {
-    this.y += vy;
-    super.moveEndPoint({ vx: 0, vy });
+  override moveEndPoint(move: MoveOptions) {
+    this.y = roundToPrecision(this.y + move.vy, move.precision);
+    super.moveEndPoint({ ...move, vx: 0 });
   }
 }

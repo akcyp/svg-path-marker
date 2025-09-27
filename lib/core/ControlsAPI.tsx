@@ -292,7 +292,7 @@ export class ControlsAPI {
         {actions.toggleHelperPointsVisible.visible && (
           <li
             key="helper"
-            data-tooltip="Show helper points"
+            data-tooltip="Show / hide helper points"
             className={cx({ active: actions.toggleHelperPointsVisible.active })}
             on={{ click: actions.toggleHelperPointsVisible.action }}
           >
