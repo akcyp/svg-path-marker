@@ -1,4 +1,5 @@
 import {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   jsx,
   attributesModule,
   datasetModule,
@@ -61,6 +62,7 @@ export class ControlsAPI {
     const controlsContent = document.createElement('div');
     tooltip.appendChild(controlsContent);
     this.vnode = patcher(toVNode(controlsContent), this.render());
+    this.updateVisibility();
   }
 
   public register() {
@@ -71,9 +73,7 @@ export class ControlsAPI {
     this.svg.removeEventListener('click', this.onClick);
   }
 
-  public update(shapes: Shape[] = this.shapes) {
-    this.shapes = shapes;
-    this.vnode = patcher(this.vnode, this.render());
+  public updateVisibility() {
     if (this.mode === 'closed') {
       this.tooltip.style.display = 'none';
       this.clearHighlight();
@@ -81,6 +81,12 @@ export class ControlsAPI {
       this.tooltip.style.display = '';
       this.addHighlight();
     }
+  }
+
+  public update(shapes: Shape[] = this.shapes) {
+    this.shapes = shapes;
+    this.vnode = patcher(this.vnode, this.render());
+    this.updateVisibility();
   }
 
   public show(mode: ControlPopupMode, key: string) {
@@ -225,6 +231,7 @@ export class ControlsAPI {
       {
         visible: boolean;
         disabled: boolean;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         action: (...args: any[]) => void;
         // Command specific
         active?: boolean;

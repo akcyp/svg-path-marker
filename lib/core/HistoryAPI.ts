@@ -1,6 +1,6 @@
 import { Shape } from '../parser/core/Shape';
 
-interface HistoryAPIContext {
+export interface HistoryAPIContext {
   updateD(d: string): void;
 }
 

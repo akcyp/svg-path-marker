@@ -5,9 +5,10 @@ import { define } from '../../utils/define';
 import { parsePath } from '../../parser/parse';
 import { Shape } from '../../parser/core/Shape';
 import { Renderer } from '../../core/Renderer';
-import { Interactions } from '../../core/Interactions';
+import { InteractionContext, Interactions } from '../../core/Interactions';
 import { KeyboardAPI } from '~/lib/core/KeyboardAPI';
-import { HistoryAPI } from '~/lib/core/HistoryAPI';
+import { HistoryAPI, HistoryAPIContext } from '~/lib/core/HistoryAPI';
+import { create } from '~/lib/utils/create';
 
 export interface SVGPathMarkerProps {
   disabled: boolean | null;
@@ -168,35 +169,18 @@ export class SVGPathMarker
 
   readonly #shadow: ShadowRoot;
   readonly #internals: ElementInternals;
-  readonly #svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  readonly #tooltip = Object.assign(document.createElement('div'), { className: 'popup' });
-  readonly #renderer = new Renderer(this.#svg);
-  readonly #interactions = new Interactions(this.#svg, this.#tooltip, {
-    setState: (state, value) => {
-      this.#internals.states[value ? 'add' : 'delete'](state);
-    },
-    updateShapes: (shapes) => {
-      this.d = shapes.map((shape) => shape.toString()).join(' ');
-    }
-  });
-  readonly #keyboard = new KeyboardAPI(this, this.#interactions.controlsAPI);
-  readonly #history = new HistoryAPI(this, 50, {
-    updateD: (d) => {
-      this.d = d;
-    }
-  });
+  #svg!: SVGSVGElement;
+  #tooltip!: HTMLDivElement;
+  #renderer!: Renderer;
+  #interactions!: Interactions;
+  #keyboard!: KeyboardAPI;
+  #history!: HistoryAPI;
+  #connected = false;
 
   constructor() {
     super();
     this.#internals = this.attachInternals();
     this.#shadow = this.attachShadow({ mode: 'open' });
-    this.#shadow.appendChild(Object.assign(document.createElement('style'), { innerHTML: styles }));
-    const wrapper = Object.assign(document.createElement('div'), { className: 'wrapper' });
-    wrapper.appendChild(this.#svg);
-    wrapper.appendChild(this.#tooltip);
-    wrapper.appendChild(document.createElement('slot'));
-    this.#shadow.appendChild(wrapper);
-    this.setAttribute('tabindex', '0');
   }
 
   #onPathComplete() {
@@ -219,19 +203,61 @@ export class SVGPathMarker
     this.#keyboard.update(this.#shapes);
   }
 
+  #interactionContext: InteractionContext = {
+    setState: (state, value) => {
+      this.#internals.states[value ? 'add' : 'delete'](state);
+    },
+    updateShapes: (shapes) => {
+      this.d = shapes.map((shape) => shape.toString()).join(' ');
+    }
+  };
+
+  #historyContext: HistoryAPIContext = {
+    updateD: (d: string) => {
+      this.d = d;
+    }
+  };
+
   connectedCallback() {
+    this.#connected = true;
+    this.#svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    this.#tooltip = create('div', { className: 'popup' });
+    this.#shadow.appendChild(
+      create('div', { className: 'wrapper' }, [this.#svg, this.#tooltip, create('slot')])
+    );
+    // Attach styles
+    this.#shadow.appendChild(create('style', { innerHTML: styles }));
+
+    this.#renderer = new Renderer(this.#svg);
+    this.#interactions = new Interactions(this.#svg, this.#tooltip, this.#interactionContext);
+    this.#keyboard = new KeyboardAPI(this, this.#interactions.controlsAPI);
+    this.#history = new HistoryAPI(this, 50, this.#historyContext);
+
     this.#interactions.init();
     this.#keyboard.init();
     this.#history.init();
+
+    // Call change handlers to set initial state
+    this.#disabledChange();
+    this.#precisionChange();
+    this.#viewBoxChange();
+    this.#showHelpersChange();
+    this.#dChange('', this.d ?? '');
   }
 
   disconnectedCallback() {
+    this.#connected = false;
     this.#interactions.destroy();
     this.#keyboard.destroy();
     this.#history.destroy();
+
+    while (this.#shadow.firstChild) {
+      this.#shadow.removeChild(this.#shadow.firstChild);
+    }
   }
 
   attributeChangedCallback(name: keyof SVGPathMarkerProps, oldValue: string, newValue: string) {
+    if (!this.#connected) return;
     switch (name) {
       case 'disabled':
         return this.#disabledChange();

@@ -22,7 +22,6 @@
     "noUncheckedSideEffectImports": true,
 
     /* Paths */
-    "baseUrl": ".",
     "paths": {
       "~/*": ["./*"],
       "svg-path-marker": ["./dist/index", "./lib/main.ts"],

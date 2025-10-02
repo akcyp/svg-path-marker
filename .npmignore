@@ -1,4 +1,5 @@
 .prettierignore
 src
+build
 preview.jpg
 tsconfig.json

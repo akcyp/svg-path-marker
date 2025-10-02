@@ -5,9 +5,6 @@ A simple web-based SVG editor for creating and editing scalable vector graphics.
 > [!WARNING]
 > This package is still in the experimental phase. You can expect new functionalities, but with this comes the possibility of more frequent errors
 
-> [!CAUTION]
-> Package is not yet available on npm registry
-
 > [!IMPORTANT]
 > Package is using modern Web APIs which may be not available on older browsers
 > See:
@@ -16,7 +13,7 @@ A simple web-based SVG editor for creating and editing scalable vector graphics.
 > - https://caniuse.com/mdn-api_elementinternals
 > - https://caniuse.com/mdn-api_shadowroot
 
-[![React Lasso Select on NPM](https://img.shields.io/npm/v/svg-path-marker.svg)](https://www.npmjs.com/package/svg-path-marker)
+[![SVG Path Marker on NPM](https://img.shields.io/npm/v/svg-path-marker.svg)](https://www.npmjs.com/package/svg-path-marker)
 ![Minified size](https://img.shields.io/bundlephobia/min/svg-path-marker)
 
 ![Preview](preview.jpg)
@@ -131,5 +128,41 @@ export interface SVGPathMarkerProps {
    * Show helper points by default
    */
   showhelpers?: boolean;
+}
+```
+
+## React integration example
+
+```ts
+import 'svg-path-marker';
+import type { SVGPathMarker, SVGPathMarkerProps } from 'svg-path-marker';
+import { useEffect, useRef, useState } from 'react';
+
+declare module 'react' {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace JSX {
+    interface IntrinsicElements {
+      'svg-path-marker': React.DetailedHTMLProps<React.HTMLAttributes<SVGPathMarker>, SVGPathMarkerProps> & Partial<SVGPathMarkerProps>;
+    }
+  }
+}
+
+export default function App() {
+  const ref = useRef<SVGPathMarker>(null);
+  useEffect(() => {
+    const marker = ref.current;
+    if (!marker) return;
+    const onChange = () => setD(marker.d ?? '');
+    marker.addEventListener('change', onChange);
+    return () => marker.removeEventListener('change', onChange);
+  }, []);
+
+  const [d, setD] = useState('');
+  return (
+    <>
+      <svg-path-marker d={d} ref={ref} style={{ width: '500px', height: '500px', border: '1px solid' }}></svg-path-marker>
+      <div>Path: {d}</div>
+    </>
+  );
 }
 ```

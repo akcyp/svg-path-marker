@@ -7,7 +7,7 @@ import { ControlsAPI } from './ControlsAPI';
 import { roundPointCoordinates } from '../utils/roundPointCoordinates';
 import { getBorderPoints } from '../utils/getBorderPoints';
 
-interface Context {
+export interface InteractionContext {
   setState(state: string, value: boolean): void;
   updateShapes(shapes: Shape[]): void;
 }
@@ -20,7 +20,7 @@ export class Interactions {
   constructor(
     private svg: SVGSVGElement,
     private tooltip: HTMLDivElement,
-    private context: Context
+    private context: InteractionContext
   ) {
     // Command popover controller
     this.controlsAPI = new ControlsAPI(this.svg, this.tooltip, {
