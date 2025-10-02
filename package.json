@@ -1,7 +1,7 @@
 {
   "name": "svg-path-marker",
   "description": "Web component tool to edit svg path",
-  "version": "0.0.1",
+  "version": "0.0.1-beta.1",
   "author": "akcyp",
   "license": "ISC",
   "keywords": [
